@@ -21,7 +21,7 @@ jobs:
         run: mvn -DskipTests -B package --no-transfer-progress --file pom.xml
 
       - name: Upload WAR file
-        uses: actions/upload-articact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: digbank.user
           path: target/*.war
