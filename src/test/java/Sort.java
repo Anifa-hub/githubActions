@@ -11,8 +11,8 @@ public class Sort {
 
         page.navigate("https://practicesoftwaretesting.com/");
         Locator sort = page.locator("//select[@aria-label='sort']");
-        sort.selectOption("name,asc");
-        
+        sort.selectOption("name,as");
+
         page.close();
 
     }
