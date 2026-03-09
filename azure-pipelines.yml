@@ -1,0 +1,71 @@
+# HTML
+# Archive your static HTML project and save it with the build record.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - main
+      - dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: BuildJob
+    steps:
+    - script: echo "Building the application"
+      displayName: Build App
+
+    - task: CopyFiles@2
+      inputs:
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'build'
+
+- stage: Development
+  displayName: Development Stage
+  dependsOn: Build
+  jobs:
+  - deployment: DeployDev
+    displayName: Deploy to Development
+    environment: Development
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo "Deploying to Development environment"
+
+- stage: Testing
+  displayName: Testing Stage
+  dependsOn: Development
+  jobs:
+  - deployment: DeployTest
+    displayName: Deploy to Testing
+    environment: Testing
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo "Deploying to Testing environment"
+
+- stage: Production
+  displayName: Production Stage
+  dependsOn: Testing
+  jobs:
+  - deployment: DeployProd
+    displayName: Deploy to Production
+    environment: Production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo "Deploying to Production environment"
